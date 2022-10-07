@@ -1,4 +1,4 @@
-STRIP = False
+STRIP = True
 
 import pygame as pg
 vec2 = pg.Vector2
@@ -24,9 +24,9 @@ if STRIP:
     strip.begin()
 
 ## GAME SETTINGS
-WIDTH = 800
-HEIGHT = 800
-PIXEL = 40
+WIDTH = 400
+HEIGHT = 400
+PIXEL = 20
 FPS = 5
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -53,6 +53,7 @@ board_colors = {
     2: GREY,
     3: WHITE
 }
+
 
 pg.init()
 pg.mixer.init()
@@ -103,13 +104,14 @@ def draw_pixel_strip(x, y, col):
         n = 399 - x - y * 20
     elif ROTATION == -90:
         n = 380 - x * 20 + y
-    strip.setPixelColor(n, Color(col[0], col[1], col[2]))
+    c = Color(col[0], col[1], col[2])
+    strip.setPixelColor(int(n), c)
 
 def draw_pixel(x, y, col):
     # r = pg.Rect(x * PIXEL, y * PIXEL, PIXEL, PIXEL)
     # pg.draw.rect(screen, col, r, border_radius=6)
-    pg.draw.circle(screen, col, (x * PIXEL + PIXEL/2,
-                   y * PIXEL + PIXEL/2), PIXEL/2 * 0.9)
+    pg.draw.circle(screen, col, (int(x) * PIXEL + PIXEL//2,
+                   int(y) * PIXEL + PIXEL//2), int(PIXEL//2 * 0.9))
     if STRIP:
         draw_pixel_strip(x, y, col)
 
