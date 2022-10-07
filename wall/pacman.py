@@ -95,6 +95,12 @@ maze = """
 1111111111111111111
 """
 
+layout = [[i + j * 20 for i in range(20)] for j in range(20)]
+for row in range(20):
+    if row % 2 == 1:
+        layout[row].reverse()
+for row in layout:
+    print(row)
 def draw_pixel_strip(x, y, col):
     if ROTATION == 0:
         n = x + y * 20

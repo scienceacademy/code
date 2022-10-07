@@ -33,7 +33,7 @@ def check_valid_pos(pos):
     return 0 >= pos.x >= 19 and 0 >= pos.y >= 19
 
 class sprite_data:
-    def __init__(self, fnames, pos, anim_speed):
+    def __init__(self, fnames, pos, anim_speed, loop=True):
         self.frames = []
         for f in fnames:
             img = Image.open(f)
@@ -44,6 +44,9 @@ class sprite_data:
         self.current_frame = self.frames[0]
         self.pos = pos
         self.last_update = 0
+        self.frame_count = 0
+        self.loop = loop
+        self.done = False
 
     def move(self, dir):
         self.pos += dir
@@ -53,6 +56,9 @@ class sprite_data:
         if now - self.last_update > self.anim_speed:
             self.last_update = now
             self.current_frame = next(self.anim)
+            self.frame_count += 1
+        if not self.loop and self.frame_count == len(self.frames):
+            self.done = True
         if not flipped:
             for x in range(self.width):
                 for y in range(self.height):
@@ -212,7 +218,7 @@ def bowser():
     screen.fill((0, 0, 0))
     bow.draw()
     pg.display.flip()
-    pg.time.wait(5000)
+    # pg.time.wait(5000)
 
 def creeper():
     print("starting creeper")
@@ -228,33 +234,33 @@ def creeper():
     screen.fill((0, 0, 0))
     cr.draw()
     pg.display.flip()
-    pg.time.wait(6000)
+    # pg.time.wait(6000)
 
 
 def zombie():
-    z = sprite_data(
-        ["m_sprites/haunter.png"], vec2(0, 0), 250)
+    f_list = [f"zombie/sprite_{i:02}.png" for i in range(25)]
+    z = sprite_data(f_list, vec2(0, 0), 250, False)
+    # zs1 = pg.mixer.Sound("misc_sounds/groan.wav")
+    zs2 = pg.mixer.Sound("misc_sounds/brains.wav")
+    # zs3 = pg.mixer.Sound("misc_sounds/zombie-7.wav")
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        for ev in pg.event.get():
+            if ev.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+        screen.fill((0, 0, 0))
+        z.draw()
+        if z.frame_count == 7:
+            zs2.play()
+        if z.done:
+            playing = False
+        pg.display.flip()
 
-
-    clock.tick(FPS)
-    for ev in pg.event.get():
-        if ev.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
-    screen.fill((0, 0, 0))
-    z.draw()
-    pg.display.flip()
-    pg.time.wait(5000)
-
-animations = [pm_anim1, bowser, creeper, boo_anim]
-boo_anim()
-while True:
-    choice(animations)()
-    pg.time.wait(2000)
-# pm_anim1()
-# pm_anim2()
-# bowser()
-# creeper()
-# boo_anim()
-# zombie()
+animations = [pm_anim1, bowser, creeper, boo_anim, zombie]
+# while True:
+#     choice(animations)()
+#     pg.time.wait(2000) # loop ?
+zombie()
 pg.quit()
