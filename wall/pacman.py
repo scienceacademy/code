@@ -1,9 +1,29 @@
+STRIP = False
+
 import pygame as pg
 vec2 = pg.Vector2
 from time import sleep
 from random import choice, random
 from itertools import cycle
+if STRIP:
+    from rpi_ws281x import PixelStrip, Color
 
+## LED MATRIX SETTINGS
+LED_COUNT = 400
+LED_PIN = 18
+LED_FREQ_HZ = 800000
+LED_DMA = 10
+LED_BRIGHTNESS = 255
+LED_INVERT = False
+LED_CHANNEL = 0
+ROTATION = 0
+
+if STRIP:
+    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
+                       LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    strip.begin()
+
+## GAME SETTINGS
 WIDTH = 800
 HEIGHT = 800
 PIXEL = 40
@@ -12,13 +32,13 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 GREY = (75, 75, 75)
-BLUE = (0, 0, 255)
+BLUE = (84, 88, 213)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 PINK = (255, 193, 204)
 CYAN = (0, 255, 255)
 ORANGE = (255, 166, 0)
-DKBLUE = (0, 0, 128)
+DKBLUE = (3, 79, 254)
 
 moves = {
     pg.K_UP: vec2(0, -1),
@@ -74,11 +94,25 @@ maze = """
 1111111111111111111
 """
 
+def draw_pixel_strip(x, y, col):
+    if ROTATION == 0:
+        n = x + y * 20
+    elif ROTATION == 90:
+        n = 19 + x * 20 - y
+    elif ROTATION == 180:
+        n = 399 - x - y * 20
+    elif ROTATION == -90:
+        n = 380 - x * 20 + y
+    strip.setPixelColor(n, Color(col[0], col[1], col[2]))
+
 def draw_pixel(x, y, col):
     # r = pg.Rect(x * PIXEL, y * PIXEL, PIXEL, PIXEL)
     # pg.draw.rect(screen, col, r, border_radius=6)
     pg.draw.circle(screen, col, (x * PIXEL + PIXEL/2,
                    y * PIXEL + PIXEL/2), PIXEL/2 * 0.9)
+    if STRIP:
+        draw_pixel_strip(x, y, col)
+
 
 class Board:
     def __init__(self):
@@ -140,8 +174,9 @@ class Ghost:
 
     def kill(self):
         self.reset()
-        # self.pos = vec2(9, 8)
-        self.pos = vec2(17, 9)
+        self.pos = vec2(9, 8)
+        # self.pos = vec2(17, 9)
+
     def draw(self):
         draw_pixel(self.pos.x, self.pos.y, self.color)
 
@@ -187,7 +222,6 @@ class Pacman:
 
     def draw(self):
         draw_pixel(self.pos.x, self.pos.y, YELLOW)
-
 
 def check_collisions():
     global dead
@@ -251,5 +285,8 @@ while playing:
     for ghost in ghosts:
         ghost.draw()
     pg.display.flip()
+    # update matrix
+    if STRIP:
+        strip.show()
 
 pg.quit()

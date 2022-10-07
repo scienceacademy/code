@@ -1,9 +1,28 @@
+STRIP = False
+
 import sys
 from PIL import Image
 from itertools import cycle
 import pygame as pg
 from random import choice, random, randint
 vec2 = pg.Vector2
+if STRIP:
+    from rpi_ws281x import PixelStrip, Color
+
+## LED MATRIX SETTINGS
+LED_COUNT = 400
+LED_PIN = 18
+LED_FREQ_HZ = 800000
+LED_DMA = 10
+LED_BRIGHTNESS = 255
+LED_INVERT = False
+LED_CHANNEL = 0
+ROTATION = 0
+
+if STRIP:
+    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
+                       LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    strip.begin()
 
 WIDTH = 400
 HEIGHT = 400
