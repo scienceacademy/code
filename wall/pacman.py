@@ -31,7 +31,7 @@ FPS = 5
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
-GREY = (75, 75, 75)
+GREY = (120,120,120)
 BLUE = (84, 88, 213)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
@@ -101,6 +101,8 @@ for row in range(20):
         layout[row].reverse()
 for row in layout:
     print(row)
+
+
 def draw_pixel_strip(x, y, col):
     if ROTATION == 0:
         n = x + y * 20
@@ -110,7 +112,12 @@ def draw_pixel_strip(x, y, col):
         n = 399 - x - y * 20
     elif ROTATION == -90:
         n = 380 - x * 20 + y
-    c = Color(col[0], col[1], col[2])
+    try:
+        n = layout[int(y)][int(x)]
+    except IndexError:
+        print(x, y, n)
+        n = 1
+    c = Color(col[1], col[0], col[2])
     strip.setPixelColor(int(n), c)
 
 def draw_pixel(x, y, col):
@@ -144,11 +151,11 @@ class Board:
                 draw_pixel(x, y, board_colors[cell])
         # draw score (remaining pills)
         pills_left = 0
-        for row in self.board:
-            pills_left += row.count(2)
-        pct = int((20 / self.pills) * (self.pills - pills_left))
-        for i in range(pct):
-            draw_pixel(19, 20-i, GREEN)
+        # for row in self.board:
+        #     pills_left += row.count(2)
+        # pct = int((20 / self.pills) * (self.pills - pills_left))
+        # for i in range(pct):
+        #     draw_pixel(19, 20-i, GREEN)
 
 
 class Ghost:

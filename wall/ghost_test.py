@@ -1,4 +1,4 @@
-STRIP = False
+STRIP = True
 
 import sys
 from PIL import Image
@@ -23,6 +23,9 @@ if STRIP:
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
                        LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
+    for i in range(LED_COUNT):
+        strip.setPixelColor(i, Color(0,0,0))
+    strip.show()
 
 WIDTH = 400
 HEIGHT = 400
@@ -77,6 +80,14 @@ pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 clock = pg.time.Clock()
 
+layout = [[i + j * 20 for i in range(20)] for j in range(20)]
+for row in range(20):
+    if row % 2 == 1:
+        layout[row].reverse()
+# for row in layout:
+#     print(row)
+
+
 pm = sprite_data(
     ["pm_sprites/pm1.png", "pm_sprites/pm2.png", "pm_sprites/pm3.png"], vec2(20, 5), 125)
 blinky = sprite_data(
@@ -96,10 +107,37 @@ flee3 = sprite_data(
 flee4 = sprite_data(
     ["pm_sprites/flee1.png", "pm_sprites/flee2.png"], vec2(20, 5), 250)
 
+def clear_strip():
+    for i in range(LED_COUNT):
+        strip.setPixelColor(i, Color(0, 0, 0))
+    strip.show()
+
+def draw_pixel_strip(x, y, col):
+    if ROTATION == 0:
+        n = x + y * 20
+    elif ROTATION == 90:
+        n = 19 + x * 20 - y
+    elif ROTATION == 180:
+        n = 399 - x - y * 20
+    elif ROTATION == -90:
+        n = 380 - x * 20 + y
+    try:
+        n = layout[int(y)][int(x)]
+    except IndexError:
+        # print(x, y, n)
+        n = 1
+    c = Color(col[1], col[0], col[2])
+    strip.setPixelColor(int(n), c)
+
 def draw_pixel(x, y, col):
     # r = pg.Rect(x * PIXEL, y * PIXEL, PIXEL, PIXEL)
     # pg.draw.rect(screen, col, r, border_radius=6)
-    pg.draw.circle(screen, col, (x * PIXEL + PIXEL/2, y * PIXEL + PIXEL/2), PIXEL/2 * 0.9)
+    pg.draw.circle(screen, col, 
+            (int(x) * PIXEL + PIXEL//2, 
+            int(y) * PIXEL + PIXEL//2),
+            int(PIXEL/2 * 0.9))
+    if STRIP:
+        draw_pixel_strip(x, y, col)
 
 def pm_anim2():
     print("starting pacman2")
@@ -109,6 +147,8 @@ def pm_anim2():
     done = False
     while not done:
         clock.tick(FPS)
+        if STRIP:
+            clear_strip()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -122,6 +162,8 @@ def pm_anim2():
             print("fin2")
             done = True
         pg.display.flip()
+        if STRIP:
+            strip.show()
     pg.mixer.music.fadeout(1000)
 
 def pm_anim1():
@@ -140,6 +182,8 @@ def pm_anim1():
     done = False
     while not done:
         clock.tick(FPS)
+        if STRIP:
+            clear_strip()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -161,6 +205,8 @@ def pm_anim1():
             print("fin1")
             done = True
         pg.display.flip()
+        if STRIP:
+            strip.show()
     pm_anim2()
 
 
@@ -179,6 +225,8 @@ def boo_anim():
     reverse = False
     while playing:
         clock.tick(FPS)
+        if STRIP:
+            clear_strip()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -202,9 +250,13 @@ def boo_anim():
         screen.fill((0, 0, 0))
         m_ghost.draw(not reverse)
         pg.display.flip()
+        if STRIP:
+            strip.show()
 
 def bowser():
     print("starting bowser")
+    if STRIP:
+            clear_strip()
     bow = sprite_data(
         ["m_sprites/bowser1.png"], vec2(0, 0), 250)
     bow_laugh = pg.mixer.Sound("m_sprites/SM64_Bowser_Laugh.ogg")
@@ -218,15 +270,19 @@ def bowser():
     screen.fill((0, 0, 0))
     bow.draw()
     pg.display.flip()
+    if STRIP:
+        strip.show()
     # pg.time.wait(5000)
 
 def creeper():
     print("starting creeper")
+    if STRIP:
+            clear_strip()
     cr = sprite_data(
         ["m_sprites/creeper.png"], vec2(0, 0), 250)
-    cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
+    # cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
     clock.tick(FPS)
-    cr_sound.play()
+    # cr_sound.play()
     for ev in pg.event.get():
         if ev.type == pg.QUIT:
             pg.quit()
@@ -234,6 +290,8 @@ def creeper():
     screen.fill((0, 0, 0))
     cr.draw()
     pg.display.flip()
+    if STRIP:
+        strip.show()
     # pg.time.wait(6000)
 
 
@@ -257,10 +315,12 @@ def zombie():
         if z.done:
             playing = False
         pg.display.flip()
+        if STRIP:
+            strip.show()
 
 animations = [pm_anim1, bowser, creeper, boo_anim, zombie]
-# while True:
-#     choice(animations)()
-#     pg.time.wait(2000) # loop ?
-zombie()
+while True:
+    choice(animations)()
+    pg.time.wait(2000) # loop ?
+# zombie()
 pg.quit()
