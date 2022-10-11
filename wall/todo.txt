@@ -1,0 +1,10 @@
+move animations to sep. files - import from folder?
+revise pacman colors
+rotation code (rotate layout matrix)
+
+mounting test
+inject power @ each strip
+solder connector wires
+diffuser - mylar + paper
+control buttons
+	- raspi gpio code
