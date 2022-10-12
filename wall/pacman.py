@@ -29,9 +29,9 @@ HEIGHT = 400
 PIXEL = 20
 FPS = 5
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
+WHITE = (0, 255,0)
 GREEN = (0, 255, 0)
-GREY = (120,120,120)
+GREY = (255,255,255)
 BLUE = (84, 88, 213)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
@@ -56,7 +56,7 @@ board_colors = {
 
 
 pg.init()
-pg.mixer.init()
+pg.mixer.init(44100, -16, 1, 1024)
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 clock = pg.time.Clock()
 
