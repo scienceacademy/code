@@ -1,7 +1,7 @@
 import os
-os.environ['SDL_AUDIODRIVER'] = "pulse"
-STRIP = True
-
+# os.environ['SDL_AUDIODRIVER'] = "pulse"
+STRIP = False
+import sys
 import pygame as pg
 vec2 = pg.Vector2
 from time import sleep
@@ -165,12 +165,13 @@ class Board:
 
 
 class Ghost:
-    def __init__(self, pos, color):
+    def __init__(self, pos, color, board):
         self.pos = pos
         self.color = color
         self.orig_color = color
         self.scared = False
         self.dir = choice(list(moves.values()))
+        self.board = board
 
     def move(self):
         if random() > 0.5:
@@ -179,7 +180,7 @@ class Ghost:
             # if self.pos + self.dir in [vec2(3, 9), vec2(15, 9)]:
             if (self.pos.x + self.dir.x) in [-1, 18] or (self.pos.y + self.dir.y) in [-1, 19]:
                 self.dir = choice(list(moves.values()))
-            elif board.get_cell(self.pos + self.dir) != 1:
+            elif self.board.get_cell(self.pos + self.dir) != 1:
                 break
             else:
                 self.dir = choice(list(moves.values()))
@@ -202,10 +203,12 @@ class Ghost:
         draw_pixel(self.pos.x, self.pos.y, self.color)
 
 class Pacman:
-    def __init__(self):
+    def __init__(self, board):
         self.pos = vec2(9, 16)
         self.dir = vec2(0, 0)
         self.pow_timer = 0
+        self.board = board
+        self.dead = False
 
     def move(self):
         if self.pow_timer > 0:
@@ -225,15 +228,15 @@ class Pacman:
             self.pos = vec2(0, 9)
             return
         # is there a wall there?
-        if board.get_cell(newpos) != 1:
+        if self.board.get_cell(newpos) != 1:
             self.pos += self.dir
             # pickup?
-            c = board.get_cell(self.pos)
+            c = self.board.get_cell(self.pos)
             if c == 2:
-                board.set_cell(self.pos, 0)
+                self.board.set_cell(self.pos, 0)
                 next(munch_sounds).play()
             if c == 3:
-                board.set_cell(self.pos, 0)
+                self.board.set_cell(self.pos, 0)
                 sounds["pow"].play()
                 self.pow_timer = 50
                 for ghost in ghosts:
@@ -244,70 +247,77 @@ class Pacman:
     def draw(self):
         draw_pixel(self.pos.x, self.pos.y, PM)
 
-def check_collisions():
-    global dead
+def check_collisions(ghosts, pm):
+    global bg_channel
     # check for ghost/player collision
     for ghost in ghosts:
         if ghost.pos == pm.pos:
             if ghost.scared:
                 ghost.kill()
-            elif not dead:
+            elif not pm.dead:
                 print("gotcha")
-                dead = True
+                pm.dead = True
                 bg_channel.stop()
+                pg.mixer.stop()
                 bg_channel.play(sounds["death"])
                 bg_channel.set_endevent(pg.USEREVENT+1)
 
-board = Board()
-pm = Pacman()
-inky = Ghost(vec2(7, 10), INKY)
-pinky = Ghost(vec2(7, 5), PINKY)
-blinky = Ghost(vec2(11, 10), BLINKY)
-clyde = Ghost(vec2(11, 5), CLYDE)
+def game():
+    global bg_channel
+    board = Board()
+    pm = Pacman(board)
+    inky = Ghost(vec2(7, 10), INKY, board)
+    pinky = Ghost(vec2(7, 5), PINKY, board)
+    blinky = Ghost(vec2(11, 10), BLINKY, board)
+    clyde = Ghost(vec2(11, 5), CLYDE, board)
 
-ghosts = [inky, pinky, blinky, clyde]
-sounds["start"].play()
-bg_channel = pg.mixer.Channel(7)
-wait = True
-dead = False
+    ghosts = [inky, pinky, blinky, clyde]
+    sounds["start"].play()
+    bg_channel = pg.mixer.Channel(7)
+    wait = True
 
-playing = True
-while playing:
-    if wait and not pg.mixer.get_busy():
-        wait = False
-    clock.tick(FPS)
-    # get input
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            playing = False
-        if event.type == pg.USEREVENT+1:
-            playing = False
-        if event.type == pg.KEYDOWN:
-            if event.key in moves and board.get_cell(pm.pos + moves[event.key]) != 1:
-                pm.dir = moves[event.key]
+    playing = True
+    while playing:
+        if wait and not pg.mixer.get_busy():
+            wait = False
+        clock.tick(FPS)
+        # get input
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.USEREVENT+1:
+                bg_channel.set_endevent()
+                playing = False
+            if event.type == pg.KEYDOWN:
+                if event.key in moves and board.get_cell(pm.pos + moves[event.key]) != 1:
+                    pm.dir = moves[event.key]
 
-    # move ghosts, move player
-    if not wait and not dead:
+        # move ghosts, move player
+        if not wait and not pm.dead:
+            for ghost in ghosts:
+                ghost.move()
+            check_collisions(ghosts, pm)
+            pm.move()
+            check_collisions(ghosts, pm)
+
+            if pm.pow_timer > 0:
+                bg_channel.queue(sounds["flee"])
+            else:
+                bg_channel.queue(sounds["siren"])
+
+        # update screen
+        screen.fill(BLACK)
+        board.draw()
+        pm.draw()
         for ghost in ghosts:
-            ghost.move()
-        check_collisions()
-        pm.move()
-        check_collisions()
+            ghost.draw()
+        pg.display.flip()
+        # update matrix
+        if STRIP:
+            strip.show()
 
-        if pm.pow_timer > 0:
-            bg_channel.queue(sounds["flee"])
-        else:
-            bg_channel.queue(sounds["siren"])
+while True:
+    game()
+    pg.time.wait(5000)
 
-    # update screen
-    screen.fill(BLACK)
-    board.draw()
-    pm.draw()
-    for ghost in ghosts:
-        ghost.draw()
-    pg.display.flip()
-    # update matrix
-    if STRIP:
-        strip.show()
-
-pg.quit()

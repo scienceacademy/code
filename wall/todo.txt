@@ -1,6 +1,7 @@
 move animations to sep. files - import from folder?
-revise pacman colors
-rotation code (rotate layout matrix)
+x fix boo anim
+x revise pacman colors
+x rotation code (rotate layout matrix)
 
 mounting test
 x inject power @ each strip
