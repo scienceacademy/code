@@ -3,8 +3,12 @@ revise pacman colors
 rotation code (rotate layout matrix)
 
 mounting test
-inject power @ each strip
+x inject power @ each strip
 solder connector wires
-diffuser - mylar + paper
+x diffuser - mylar + paper
 control buttons
 	- raspi gpio code
+
+pacman
+	press key to play again
+

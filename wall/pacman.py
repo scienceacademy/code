@@ -1,3 +1,5 @@
+import os
+os.environ['SDL_AUDIODRIVER'] = "pulse"
 STRIP = True
 
 import pygame as pg
@@ -16,7 +18,7 @@ LED_DMA = 10
 LED_BRIGHTNESS = 255
 LED_INVERT = False
 LED_CHANNEL = 0
-ROTATION = 0
+ROTATION = 90
 
 if STRIP:
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
@@ -29,16 +31,24 @@ HEIGHT = 400
 PIXEL = 20
 FPS = 5
 BLACK = (0, 0, 0)
-WHITE = (0, 255,0)
+WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
-GREY = (255,255,255)
-BLUE = (84, 88, 213)
+GREY = (100,100,100)
+BLUE = (25, 25, 166)
 YELLOW = (255, 255, 0)
 RED = (255, 0, 0)
 PINK = (255, 193, 204)
 CYAN = (0, 255, 255)
 ORANGE = (255, 166, 0)
 DKBLUE = (3, 79, 254)
+WALL = BLUE
+PM = YELLOW
+PILL = GREY
+POWPILL = WHITE
+INKY = CYAN
+PINKY = PINK
+BLINKY = RED
+CLYDE = ORANGE
 
 moves = {
     pg.K_UP: vec2(0, -1),
@@ -49,9 +59,9 @@ moves = {
 
 board_colors = {
     0: BLACK,
-    1: BLUE,
-    2: GREY,
-    3: WHITE
+    1: WALL,
+    2: PILL,
+    3: POWPILL
 }
 
 
@@ -99,24 +109,25 @@ layout = [[i + j * 20 for i in range(20)] for j in range(20)]
 for row in range(20):
     if row % 2 == 1:
         layout[row].reverse()
-for row in layout:
-    print(row)
+# for row in layout:
+#     print(row)
 
 
 def draw_pixel_strip(x, y, col):
     if ROTATION == 0:
-        n = x + y * 20
-    elif ROTATION == 90:
-        n = 19 + x * 20 - y
-    elif ROTATION == 180:
-        n = 399 - x - y * 20
-    elif ROTATION == -90:
-        n = 380 - x * 20 + y
-    try:
         n = layout[int(y)][int(x)]
-    except IndexError:
-        print(x, y, n)
-        n = 1
+    elif ROTATION == -90:
+        # n = 19 + x * 20 - y
+        r = [[layout[j][i] for j in range(len(layout))] for i in range(len(layout[0])-1, -1, -1)]
+        n = r[int(y)][int(x)]
+    elif ROTATION == 90:
+        r = [[layout[j][i] for j in range(len(layout))] for i in range(len(layout[0]))]
+        n = r[int(y)][int(x)]
+    # try:
+    #     n = layout[int(y)][int(x)]
+    # except IndexError:
+    #     print(x, y, n)
+    #     n = 1
     c = Color(col[1], col[0], col[2])
     strip.setPixelColor(int(n), c)
 
@@ -236,7 +247,7 @@ class Pacman:
             self.dir = vec2(0, 0)
 
     def draw(self):
-        draw_pixel(self.pos.x, self.pos.y, YELLOW)
+        draw_pixel(self.pos.x, self.pos.y, PM)
 
 def check_collisions():
     global dead
@@ -254,10 +265,10 @@ def check_collisions():
 
 board = Board()
 pm = Pacman()
-inky = Ghost(vec2(7, 10), CYAN)
-pinky = Ghost(vec2(7, 5), PINK)
-blinky = Ghost(vec2(11, 10), RED)
-clyde = Ghost(vec2(11, 5), ORANGE)
+inky = Ghost(vec2(7, 10), INKY)
+pinky = Ghost(vec2(7, 5), PINKY)
+blinky = Ghost(vec2(11, 10), BLINKY)
+clyde = Ghost(vec2(11, 5), CLYDE)
 
 ghosts = [inky, pinky, blinky, clyde]
 sounds["start"].play()

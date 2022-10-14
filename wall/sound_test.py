@@ -1,7 +1,7 @@
 import pygame
 from time import sleep
 
-pygame.mixer.pre_init(devicename="USB-Audio - USB PnP Sound Device")
+#pygame.mixer.pre_init(devicename="USB-Audio - USB PnP Sound Device")
 pygame.init()
 pygame.mixer.init()
 
