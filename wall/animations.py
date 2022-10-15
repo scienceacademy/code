@@ -8,7 +8,14 @@ STRIP = False
 
 vec2 = pg.Vector2
 if STRIP:
+    import RPi.GPIO as GPIO
+    GPIO.set_mode(GPIO.BOARD)
     from rpi_ws281x import PixelStrip, Color
+
+quit_button = pg.K_TAB
+if STRIP:
+    quit_button = 16
+    GPIO.setup(quit_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 ## LED MATRIX SETTINGS
 LED_COUNT = 400
@@ -33,6 +40,9 @@ HEIGHT = 400
 PIXEL = 20
 FPS = 10
 
+
+def check_quit_button():
+    return GPIO.input(quit_button)
 
 def check_valid_pos(pos):
     return 0 >= pos.x >= 19 and 0 >= pos.y >= 19
@@ -153,6 +163,9 @@ def pm_anim2():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
+            if not check_button():
+                pg.quit()
+                sys.exit()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -184,6 +197,9 @@ def pm_anim1():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
+            if not check_button():
+                pg.quit()
+                sys.exit()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -219,6 +235,9 @@ def boo_anim():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
+            if not check_button():
+                pg.quit()
+                sys.exit()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -250,6 +269,9 @@ def bowser():
     print("starting bowser")
     if STRIP:
         clear_strip()
+        if not check_button():
+            pg.quit()
+            sys.exit()
     bow = sprite_data(
         ["m_sprites/bowser1.png"], vec2(0, 0), 250)
     bow_laugh = pg.mixer.Sound("m_sprites/SM64_Bowser_Laugh.ogg")
@@ -272,6 +294,9 @@ def creeper():
     print("starting creeper")
     if STRIP:
         clear_strip()
+        if not check_button():
+            pg.quit()
+            sys.exit()
     cr = sprite_data(
         ["m_sprites/creeper.png"], vec2(0, 0), 250)
     cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
@@ -296,6 +321,11 @@ def zombie():
     playing = True
     while playing:
         clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        if not check_button():
+            pg.quit()
+            sys.exit()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -317,6 +347,11 @@ def macy_pumpkin():
     playing = True
     while playing:
         clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        if not check_button():
+            pg.quit()
+            sys.exit()
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()

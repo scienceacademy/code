@@ -1,6 +1,6 @@
 import os
-os.environ['SDL_AUDIODRIVER'] = "pulse"
-STRIP = True
+# os.environ['SDL_AUDIODRIVER'] = "pulse"
+STRIP = False
 
 import pygame as pg
 vec2 = pg.Vector2
