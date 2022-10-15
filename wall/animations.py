@@ -4,17 +4,16 @@ from random import choice, random, randint
 from itertools import cycle
 from PIL import Image
 import sys
-STRIP = False
+STRIP = True
 
 vec2 = pg.Vector2
 if STRIP:
     import RPi.GPIO as GPIO
-    GPIO.set_mode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BOARD)
     from rpi_ws281x import PixelStrip, Color
 
-quit_button = pg.K_TAB
+quit_button = 16
 if STRIP:
-    quit_button = 16
     GPIO.setup(quit_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 ## LED MATRIX SETTINGS
@@ -41,8 +40,11 @@ PIXEL = 20
 FPS = 10
 
 
-def check_quit_button():
-    return GPIO.input(quit_button)
+def check_button():
+    state = GPIO.input(quit_button)
+    if state == 0:
+        ev = pg.event.Event(pg.KEYDOWN, key=pg.K_TAB)
+        pg.event.post(ev)
 
 def check_valid_pos(pos):
     return 0 >= pos.x >= 19 and 0 >= pos.y >= 19
@@ -133,6 +135,21 @@ def draw_pixel(x, y, col):
     if STRIP:
         draw_pixel_strip(x, y, col)
 
+def check_events():
+#            if not check_button():
+ #               pg.quit()
+  #              sys.exit()
+    if STRIP:
+        check_button()
+    for ev in pg.event.get():
+        if ev.type == pg.QUIT:
+            pg.quit()
+            sys.exit()
+        if ev.type == pg.KEYDOWN and ev.key == pg.K_TAB:
+            pg.quit()
+            sys.exit()
+
+
 ################ PACMAN ANIM
 pm = sprite_data(
     ["pm_sprites/pm1.png", "pm_sprites/pm2.png", "pm_sprites/pm3.png"], vec2(20, 5), 125)
@@ -163,13 +180,7 @@ def pm_anim2():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
-            if not check_button():
-                pg.quit()
-                sys.exit()
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
+        check_events()
         pm.move(vec2(-2.1, 0))
         flee1.move(vec2(-2, 0))
         screen.fill((0, 0, 0))
@@ -197,13 +208,7 @@ def pm_anim1():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
-            if not check_button():
-                pg.quit()
-                sys.exit()
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
+        check_events()
         pm.move(vec2(2, 0))
         g.move(vec2(2, 0))
         screen.fill((0, 0, 0))
@@ -235,13 +240,7 @@ def boo_anim():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
-            if not check_button():
-                pg.quit()
-                sys.exit()
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
+        check_events()
         if pg.time.get_ticks() % 20 == 0 and random() > 0.7:
             boo_laugh.play()
         m = next(m_ghost_moves)
@@ -269,19 +268,13 @@ def bowser():
     print("starting bowser")
     if STRIP:
         clear_strip()
-        if not check_button():
-            pg.quit()
-            sys.exit()
     bow = sprite_data(
         ["m_sprites/bowser1.png"], vec2(0, 0), 250)
     bow_laugh = pg.mixer.Sound("m_sprites/SM64_Bowser_Laugh.ogg")
 
     bow_laugh.play()
     clock.tick(FPS)
-    for ev in pg.event.get():
-        if ev.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
+    check_events()
     screen.fill((0, 0, 0))
     bow.draw()
     pg.display.flip()
@@ -294,18 +287,12 @@ def creeper():
     print("starting creeper")
     if STRIP:
         clear_strip()
-        if not check_button():
-            pg.quit()
-            sys.exit()
     cr = sprite_data(
         ["m_sprites/creeper.png"], vec2(0, 0), 250)
     cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
     clock.tick(FPS)
+    check_events()
     cr_sound.play()
-    for ev in pg.event.get():
-        if ev.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
     screen.fill((0, 0, 0))
     cr.draw()
     pg.display.flip()
@@ -321,15 +308,9 @@ def zombie():
     playing = True
     while playing:
         clock.tick(FPS)
+        check_events()
         if STRIP:
             clear_strip()
-        if not check_button():
-            pg.quit()
-            sys.exit()
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
         screen.fill((0, 0, 0))
         z.draw()
         if z.frame_count == 7:
@@ -349,13 +330,7 @@ def macy_pumpkin():
         clock.tick(FPS)
         if STRIP:
             clear_strip()
-        if not check_button():
-            pg.quit()
-            sys.exit()
-        for ev in pg.event.get():
-            if ev.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
+        check_events()
         screen.fill((0, 0, 0))
         mp.draw()
         if mp.done:
