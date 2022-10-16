@@ -8,6 +8,8 @@ from time import sleep
 from random import choice, random
 from itertools import cycle
 if STRIP:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
     from rpi_ws281x import PixelStrip, Color
 
 ## LED MATRIX SETTINGS
@@ -19,6 +21,12 @@ LED_BRIGHTNESS = 255
 LED_INVERT = False
 LED_CHANNEL = 0
 ROTATION = 90
+buttons = {
+    16: pg.K_LEFT,
+    18: pg.K_RIGHT,
+    22: pg.K_UP,
+    24: pg.K_DOWN
+}
 
 if STRIP:
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
@@ -112,6 +120,13 @@ for row in range(20):
 # for row in layout:
 #     print(row)
 
+
+def check_buttons():
+    for butt in buttons:
+        state = GPIO.input(butt)
+        if state == 0:
+            ev = pg.event.Event(pg.KEYDOWN, key=buttons[butt])
+            pg.event.post(ev)
 
 def draw_pixel_strip(x, y, col):
     if ROTATION == 0:
