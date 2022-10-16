@@ -1,10 +1,10 @@
 from sprite_data import *
 import pygame as pg
-from random import choice, random, randint
+from random import choice, random, randint, shuffle
 from itertools import cycle
 from PIL import Image
 import sys
-STRIP = True
+STRIP = False
 
 vec2 = pg.Vector2
 if STRIP:
@@ -271,16 +271,20 @@ def bowser():
     bow = sprite_data(
         ["m_sprites/bowser1.png"], vec2(0, 0), 250)
     bow_laugh = pg.mixer.Sound("m_sprites/SM64_Bowser_Laugh.ogg")
-
     bow_laugh.play()
-    clock.tick(FPS)
-    check_events()
-    screen.fill((0, 0, 0))
-    bow.draw()
-    pg.display.flip()
-    if STRIP:
-        strip.show()
-    pg.time.wait(int(bow_laugh.get_length() * 1000) + 1500)
+    start = pg.time.get_ticks()
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        check_events()
+        screen.fill((0, 0, 0))
+        bow.draw()
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+        if pg.time.get_ticks() - start > bow_laugh.get_length() * 1000 + 1500:
+            playing = False
+        # pg.time.wait(int(bow_laugh.get_length() * 1000) + 1500)
 
 ############ CREEPER ANIMATION
 def creeper():
@@ -290,15 +294,20 @@ def creeper():
     cr = sprite_data(
         ["m_sprites/creeper.png"], vec2(0, 0), 250)
     cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
-    clock.tick(FPS)
-    check_events()
+    start = pg.time.get_ticks()
     cr_sound.play()
-    screen.fill((0, 0, 0))
-    cr.draw()
-    pg.display.flip()
-    if STRIP:
-        strip.show()
-    pg.time.wait(int(cr_sound.get_length() * 1000))
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        check_events()
+        screen.fill((0, 0, 0))
+        cr.draw()
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+        if pg.time.get_ticks() - start > cr_sound.get_length() * 1000 + 1500:
+            playing = False
+    # pg.time.wait(int(cr_sound.get_length() * 1000))
 
 ########## ZOMBIE ANIMATION
 def zombie():
@@ -339,10 +348,29 @@ def macy_pumpkin():
         if STRIP:
             strip.show()
 
+########## SASHA MIMIKYU ######
+# def sasha_mimikyu():
+#     f_list = [f"sasha_mimikyu/pixil-frame-{i}.png" for i in range(50)]
+#     mp = sprite_data(f_list, vec2(0, 0), 250, False)
+#     playing = True
+#     while playing:
+#         clock.tick(FPS)
+#         if STRIP:
+#             clear_strip()
+#         check_events()
+#         screen.fill((0, 0, 0))
+#         mp.draw()
+#         if mp.done:
+#             playing = False
+#         pg.display.flip()
+#         if STRIP:
+#             strip.show()
+
 animation_list = [
     pm_anim1, bowser, creeper, boo_anim, zombie,
-    macy_pumpkin
+    macy_pumpkin, sasha_mimikyu
 ]
+shuffle(animation_list)
 animations = cycle(animation_list)
 
 while True:
