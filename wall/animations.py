@@ -348,27 +348,27 @@ def macy_pumpkin():
         if STRIP:
             strip.show()
 
-########## SASHA MIMIKYU ######
-# def sasha_mimikyu():
-#     f_list = [f"sasha_mimikyu/pixil-frame-{i}.png" for i in range(50)]
-#     mp = sprite_data(f_list, vec2(0, 0), 250, False)
-#     playing = True
-#     while playing:
-#         clock.tick(FPS)
-#         if STRIP:
-#             clear_strip()
-#         check_events()
-#         screen.fill((0, 0, 0))
-#         mp.draw()
-#         if mp.done:
-#             playing = False
-#         pg.display.flip()
-#         if STRIP:
-#             strip.show()
+########## SASHA ######
+def sasha():
+    f_list = [f"sasha/pixil-frame-{i}.png" for i in range(40)]
+    mp = sprite_data(f_list, vec2(0, 0), 250, False)
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        check_events()
+        screen.fill((0, 0, 0))
+        mp.draw()
+        if mp.done:
+            playing = False
+        pg.display.flip()
+        if STRIP:
+            strip.show()
 
 animation_list = [
     pm_anim1, bowser, creeper, boo_anim, zombie,
-    macy_pumpkin, sasha_mimikyu
+    macy_pumpkin, sasha
 ]
 shuffle(animation_list)
 animations = cycle(animation_list)
