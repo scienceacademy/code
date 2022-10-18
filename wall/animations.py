@@ -347,6 +347,8 @@ def macy_pumpkin():
         pg.display.flip()
         if STRIP:
             strip.show()
+        if pg.time.get_ticks() - start > cr_sound.get_length() * 1000 + 1500:
+            playing = False
 
 ########## SASHA ######
 def sasha():
@@ -366,9 +368,74 @@ def sasha():
         if STRIP:
             strip.show()
 
+########## Margo ######
+def margo():
+    f_list = [f"margo/pixil-frame-{i}.png" for i in range(5)]
+    mp = sprite_data(f_list, vec2(0, 0), 250, False)
+    start = pg.time.get_ticks()
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        check_events()
+        screen.fill((0, 0, 0))
+        mp.draw()
+        # if mp.done:
+        #     playing = False
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+        if pg.time.get_ticks() - start > 5000:
+            playing = False
+
+############# DAMIAN
+def damian1():
+    f_list = ["damian/boo_king_1.png", "damian/boo_king_2.png"]
+    mp = sprite_data(f_list, vec2(0, 0), 1500, True)
+    sound = pg.mixer.Sound("misc_sounds/king_boo.ogg")
+    sound.play()
+    start = pg.time.get_ticks()
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        check_events()
+        screen.fill((0, 0, 0))
+        mp.draw()
+        # if mp.done:
+        #     playing = False
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+        if pg.time.get_ticks() - start > 5000:
+            playing = False
+
+
+def damian2():
+    if STRIP:
+        clear_strip()
+    bow = sprite_data(
+        ["damian/ghastly.png"], vec2(0, 0), 250)
+    sound = pg.mixer.Sound("misc_sounds/ghastly.mp3")
+    sound.play()
+    start = pg.time.get_ticks()
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        check_events()
+        screen.fill((0, 0, 0))
+        bow.draw()
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+        if pg.time.get_ticks() - start > sound.get_length() * 1000 + 1500:
+            playing = False
+
 animation_list = [
     pm_anim1, bowser, creeper, boo_anim, zombie,
-    macy_pumpkin, sasha
+    macy_pumpkin, sasha, margo, damian1, damian2
 ]
 shuffle(animation_list)
 animations = cycle(animation_list)
