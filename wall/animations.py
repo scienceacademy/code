@@ -1,10 +1,10 @@
-from sprite_data import *
+# from sprite_data import *
 import pygame as pg
 from random import choice, random, randint, shuffle
 from itertools import cycle
 from PIL import Image
 import sys
-STRIP = False
+STRIP = True
 
 vec2 = pg.Vector2
 if STRIP:
@@ -24,7 +24,7 @@ LED_DMA = 10
 LED_BRIGHTNESS = 255
 LED_INVERT = False
 LED_CHANNEL = 0
-ROTATION = 0
+ROTATION = 90
 
 if STRIP:
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
@@ -47,7 +47,7 @@ def check_button():
         pg.event.post(ev)
 
 def check_valid_pos(pos):
-    return 0 >= pos.x >= 19 and 0 >= pos.y >= 19
+    return 0 <= pos.x <= 19 and 0 <= pos.y <= 19
 
 
 class sprite_data:
@@ -106,7 +106,8 @@ for row in range(20):
 def clear_strip():
     for i in range(LED_COUNT):
         strip.setPixelColor(i, Color(0, 0, 0))
-    strip.show()
+    # strip.setPixelColor(0, Color(255, 0, 0))
+    # strip.show()
 
 
 def draw_pixel_strip(x, y, col):
@@ -118,7 +119,7 @@ def draw_pixel_strip(x, y, col):
              for i in range(len(layout[0])-1, -1, -1)]
         n = r[int(y)][int(x)]
     elif ROTATION == 90:
-        r = [[layout[j][i] for j in range(len(layout))]
+        r = [[layout[j][i] for j in range(len(layout)-1, -1, -1)]
              for i in range(len(layout[0]))]
         n = r[int(y)][int(x)]
     c = Color(col[1], col[0], col[2])
@@ -131,6 +132,7 @@ def draw_pixel(x, y, col):
                     int(y) * PIXEL + PIXEL//2),
                    int(PIXEL/2 * 0.9))
     if not check_valid_pos(vec2(x, y)):
+        # print("oob", x, y)
         return
     if STRIP:
         draw_pixel_strip(x, y, col)
@@ -209,8 +211,8 @@ def pm_anim1():
         if STRIP:
             clear_strip()
         check_events()
-        pm.move(vec2(2, 0))
-        g.move(vec2(2, 0))
+        pm.move(vec2(1, 0))
+        g.move(vec2(1, 0))
         screen.fill((0, 0, 0))
         pm.draw()
         g.draw(True)
@@ -334,6 +336,7 @@ def zombie():
 def macy_pumpkin():
     f_list = [f"macy_pumpkin/sprite_{i:02}.png" for i in range(57)]
     mp = sprite_data(f_list, vec2(0, 0), 250, False)
+    start = pg.time.get_ticks()
     playing = True
     while playing:
         clock.tick(FPS)
@@ -347,8 +350,8 @@ def macy_pumpkin():
         pg.display.flip()
         if STRIP:
             strip.show()
-        if pg.time.get_ticks() - start > cr_sound.get_length() * 1000 + 1500:
-            playing = False
+        # if pg.time.get_ticks() - start > 15000:
+        #     playing = False
 
 ########## SASHA ######
 def sasha():

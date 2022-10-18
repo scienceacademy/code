@@ -3,14 +3,20 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BOARD)
 
-button1 = 24
+buttons = {
+    16: "pg.K_UP",
+    18: "pg.K_RIGHT",
+    13: "pg.K_LEFT",
+    15: "pg.K_DOWN"
+}
 
-GPIO.setup(button1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+for butt in buttons:
+    GPIO.setup(butt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 last = False
 while True:
-    state1 = GPIO.input(button1)
-    if last != state1: 
-        print(state1)
-    last = state1
+    for butt in buttons:
+        state = GPIO.input(butt)
+        if state == 0:
+           print(butt)
     time.sleep(0.05)

@@ -22,16 +22,18 @@ LED_INVERT = False
 LED_CHANNEL = 0
 ROTATION = 90
 buttons = {
-    16: pg.K_LEFT,
+    13: pg.K_LEFT,
     18: pg.K_RIGHT,
-    22: pg.K_UP,
-    24: pg.K_DOWN
+    16: pg.K_UP,
+    15: pg.K_DOWN
 }
 
 if STRIP:
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA,
                        LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
+    for butt in buttons:
+        GPIO.setup(butt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 ## GAME SETTINGS
 WIDTH = 400
@@ -125,6 +127,7 @@ def check_buttons():
     for butt in buttons:
         state = GPIO.input(butt)
         if state == 0:
+            # print(butt)
             ev = pg.event.Event(pg.KEYDOWN, key=buttons[butt])
             pg.event.post(ev)
 
@@ -136,7 +139,9 @@ def draw_pixel_strip(x, y, col):
         r = [[layout[j][i] for j in range(len(layout))] for i in range(len(layout[0])-1, -1, -1)]
         n = r[int(y)][int(x)]
     elif ROTATION == 90:
-        r = [[layout[j][i] for j in range(len(layout))] for i in range(len(layout[0]))]
+        # r = [[layout[j][i] for j in range(len(layout))] for i in range(len(layout[0]))]
+        r = [[layout[j][i] for j in range(len(layout)-1, -1, -1)]
+             for i in range(len(layout[0]))]
         n = r[int(y)][int(x)]
     c = Color(col[1], col[0], col[2])
     strip.setPixelColor(int(n), c)
@@ -292,6 +297,7 @@ while playing:
         wait = False
     clock.tick(FPS)
     # get input
+    check_buttons()
     for event in pg.event.get():
         if event.type == pg.QUIT:
             playing = False
