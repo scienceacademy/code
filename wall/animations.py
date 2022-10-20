@@ -4,7 +4,7 @@ from random import choice, random, randint, shuffle
 from itertools import cycle
 from PIL import Image
 import sys
-STRIP = True
+STRIP = False
 
 vec2 = pg.Vector2
 if STRIP:
@@ -290,26 +290,23 @@ def bowser():
 
 ############ CREEPER ANIMATION
 def creeper():
-    print("starting creeper")
-    if STRIP:
-        clear_strip()
-    cr = sprite_data(
-        ["m_sprites/creeper.png"], vec2(0, 0), 250)
+    f_list = [f"creeper_abby/CREEPER_Abby{i:02}.png" for i in range(11)]
+    cr = sprite_data(f_list, vec2(0, 0), 350, False)
     cr_sound = pg.mixer.Sound("m_sprites/creeper_explosion.mp3")
-    start = pg.time.get_ticks()
     cr_sound.play()
     playing = True
     while playing:
         clock.tick(FPS)
         check_events()
+        if STRIP:
+            clear_strip()
         screen.fill((0, 0, 0))
         cr.draw()
+        if cr.done:
+            playing = False
         pg.display.flip()
         if STRIP:
             strip.show()
-        if pg.time.get_ticks() - start > cr_sound.get_length() * 1000 + 1500:
-            playing = False
-    # pg.time.wait(int(cr_sound.get_length() * 1000))
 
 ########## ZOMBIE ANIMATION
 def zombie():
@@ -392,6 +389,27 @@ def margo():
         if pg.time.get_ticks() - start > 5000:
             playing = False
 
+############# kirby
+def kirby():
+    f_list = [f"kirby_dasha/pixil-frame-{i}.png" for i in range(77)]
+    k = sprite_data(f_list, vec2(0, 0), 100, False)
+    start = pg.time.get_ticks()
+    sound = pg.mixer.Sound("kirby_dasha/kirby1.mp3")
+    sound.play()
+    playing = True
+    while playing:
+        clock.tick(FPS)
+        if STRIP:
+            clear_strip()
+        check_events()
+        screen.fill((0, 0, 0))
+        k.draw()
+        if k.done:
+            playing = False
+        pg.display.flip()
+        if STRIP:
+            strip.show()
+
 ############# DAMIAN
 def damian1():
     f_list = ["damian/boo_king_1.png", "damian/boo_king_2.png"]
@@ -438,7 +456,8 @@ def damian2():
 
 animation_list = [
     pm_anim1, bowser, creeper, boo_anim, zombie,
-    macy_pumpkin, sasha, margo, damian1, damian2
+    macy_pumpkin, sasha, margo, damian1, damian2,
+    kirby
 ]
 shuffle(animation_list)
 animations = cycle(animation_list)
