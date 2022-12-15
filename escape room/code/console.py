@@ -36,7 +36,7 @@ messages = {
     ],
     "black": [
         "From: green\n I fixed the morse code problem",
-        "From: blue\n call my contact, he'll share the right order if you say 'banana sandwich'",
+        "From: blue\n call my contact, he'll share the right order if you say the phrase",
         "From: red\n Security override will now require all 4 of us to execute - 3 digit code for each color",
     ],
     "green": [
