@@ -9,7 +9,7 @@ def ctrl_c_handler(signum, frame):
     pass
 
 system("clear")
-# signal.signal(signal.SIGINT, ctrl_c_handler)
+signal.signal(signal.SIGINT, ctrl_c_handler)
 
 status = {
     "red": 5,
@@ -20,7 +20,7 @@ status = {
 override_lock = 3
 invalid_count = 0
 
-override_code = "AAAA"
+override_code = "BACONDONUT"
 passwords = {
     "red": "qjka",
     "green": "flyer",
@@ -31,22 +31,23 @@ passwords = {
 messages = {
     "red": [
         "From: black\n a rubber duck is always a good way to debug a problem",
-        "From: black\n I think they're onto us. Figure out a way to make it so that it takes all of us to disable the payload.",
-        "From: blue\n measure the threads in imperial fashion",
+        "From: black\n I think they're onto us. Figure out a way to make it so it takes all of us to disable the payload.",
+        "From: blue\n measure the strings in imperial fashion",
     ],
     "black": [
-        "From: blue\n I fixed the morse code problem",
-        "From: red\n Security override will now require all 4 of us to execute",
+        "From: green\n I fixed the morse code problem",
+        "From: blue\n call my contact, he'll share the right order if you say 'banana sandwich'",
+        "From: red\n Security override will now require all 4 of us to execute - 3 digit code for each color",
     ],
     "green": [
         "From: red\n figured out your requested 'route' - check the file",
-        "From: red\n if you follow the central strategy and count evenly, then your odds will be good"
-        "From: black\n a rubber duck is always a good way to debug a problem",
+        "From: black\n a duck would make a good spirit animal or totem",
+        "From: blue\n I left something in the book of rules"
     ],
     "blue": [
-        "From: black\n a rubber duck is always a good way to debug a problem",
-        "From: black\n That book idea was *Genius*.",
-        "From: green\n you'll need a bunch of bands",
+        "From: black\n when the duck is in place, listen carefully",
+        "From: red\n if you follow the central strategy and count evenly, then your odds will be good",
+        "From: green\n you'll need a bunch of bands to connect the dots on the wall",
     ]
 }
 
@@ -219,6 +220,8 @@ done = False
 while not done:
     prompt = user + " Command: "
     cmd = input(prompt).split()
+    if len(cmd) == 0:
+        continue
     if override_lock <= 0:
         locked()
         continue
