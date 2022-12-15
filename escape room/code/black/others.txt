@@ -1,0 +1,3 @@
+#00ff00 travel plan
+#0000ff string in order
+#ff0000 dice c/o/e
