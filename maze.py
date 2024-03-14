@@ -16,6 +16,7 @@ def generate_maze(width, height):
     # cell = {'N': True, 'S': True, 'W': True, 'E': True, 'visited': False}
     maze = [[Cell() for y in range(height)] for x in range(width)]
 
+    # recursive backtracking algorithm
     def carve(x, y):
         # TODO: Complete the DFS algorithm - see instructions
         # Your code goes between these lines
@@ -25,8 +26,8 @@ def generate_maze(width, height):
 
         # ---------------------------------------------------
         pass
-  carve(0, 0)
-  return maze
+    carve(0, 0)
+    return maze
 
 
 def maze_to_svg(maze, cell_size):
