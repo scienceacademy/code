@@ -24,6 +24,7 @@ def generate_maze(width, height):
 
 
         # ---------------------------------------------------
+        pass
   carve(0, 0)
   return maze
 
