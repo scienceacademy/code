@@ -16,21 +16,16 @@ def generate_maze(width, height):
     # cell = {'N': True, 'S': True, 'W': True, 'E': True, 'visited': False}
     maze = [[Cell() for y in range(height)] for x in range(width)]
 
-    # recursive backtracking algorithm
     def carve(x, y):
-        maze[x][y].visited = True
-        random.shuffle(directions)
-        for direction in directions:
-            dx, dy = neighbors[direction]
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < width and 0 <= ny < height and not maze[nx][ny].visited:
-                maze[x][y].walls[direction] = False
-                maze[nx][ny].walls[opposites[direction]] = False
-                carve(nx, ny)
+        # TODO: Complete the DFS algorithm - see instructions
+        # Your code goes between these lines
+        # ---------------------------------------------------
 
-    # start_x, start_y = random.randint(0, width - 1), random.randint(0, hemaze - 1)
-    carve(0, 0)
-    return maze
+
+
+        # ---------------------------------------------------
+  carve(0, 0)
+  return maze
 
 
 def maze_to_svg(maze, cell_size):
