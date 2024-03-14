@@ -1,4 +1,6 @@
-from xml.dom.minidom import Document
+import os
+import cairosvg
+import svgwrite
 import random
 
 NORTH, SOUTH, EAST, WEST = 0, 1, 2, 3
@@ -6,101 +8,71 @@ directions = [NORTH, SOUTH, EAST, WEST]
 opposites = {NORTH: SOUTH, SOUTH: NORTH, EAST: WEST, WEST: EAST}
 neighbors = {NORTH: (0, -1), SOUTH: (0, 1), WEST: (-1, 0),
              EAST: (1, 0)}
+width, height = 40, 20
+
+# This defines a single cell with four walls
 class Cell:
     def __init__(self):
         self.walls = {NORTH: True, SOUTH: True, WEST: True, EAST: True}
         self.visited = False
 
-def generate_maze(width, height):
-    # create a maze of cells with walls on all sides
-    # cell = {'N': True, 'S': True, 'W': True, 'E': True, 'visited': False}
-    maze = [[Cell() for y in range(height)] for x in range(width)]
 
-    # recursive backtracking algorithm
-    def carve(x, y):
-        # TODO: Complete the DFS algorithm - see instructions
-        # Your code goes between these lines
-        # ---------------------------------------------------
+# Creates the maze as a grid of cells
+maze = [[Cell() for x in range(width)] for y in range(height)]
 
+# This function "carves" the path out of the grid.
+def carve(x, y):
+    # TODO: Complete the DFS algorithm
+    # Your code goes between these lines
+    # ---------------------------------------------------
 
+    # ---------------------------------------------------
+    pass
 
-        # ---------------------------------------------------
-        pass
-    carve(0, 0)
-    return maze
+# Choose the starting position
+startx, starty = 0, 0
+carve(startx, starty)
+save_file = "maze"
+pixel_size = 25
 
-
-def maze_to_svg(maze, cell_size):
-    # create the XML document and root element
-    doc = Document()
-    svg = doc.createElement('svg')
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-    svg.setAttribute('width', str(len(maze) * cell_size))
-    svg.setAttribute('height', str(len(maze[0]) * cell_size))
-    doc.appendChild(svg)
+# DO NOT CHANGE BELOW THIS LINE
+#############################
+def maze_to_svg(cell_size):
+    dwg = svgwrite.Drawing(
+        size=(len(maze[0]) * cell_size, len(maze) * cell_size))
 
     # create the styles for walls and paths
-    styles = doc.createElement('style')
-    styles.appendChild(doc.createTextNode('''
-        .wall {
-            stroke: green;
-            stroke-width: 2;
-        }
-        .path {
-            stroke: white;
-            stroke-width: 2;
-        }
-    '''))
-    svg.appendChild(styles)
+    dwg.defs.add(dwg.style(
+        '.wall {stroke: green; stroke-width: 4;} .path {stroke: white; stroke-width: 2;}'))
 
+    # background
+    dwg.add(dwg.rect(insert=(0, 0), size=("100%", "100%"),
+            rx=None, ry=None, fill="rgb(50, 50, 50)"))
     # draw the walls and paths
-    for y in range(len(maze[0])):
-        for x in range(len(maze)):
-            if maze[x][y].walls[NORTH]:
-                wall = doc.createElement('line')
-                wall.setAttribute('class', 'wall')
-                wall.setAttribute('x1', str(x * cell_size))
-                wall.setAttribute('y1', str(y * cell_size))
-                wall.setAttribute('x2', str((x + 1) * cell_size))
-                wall.setAttribute('y2', str(y * cell_size))
-                svg.appendChild(wall)
-            if maze[x][y].walls[SOUTH]:
-                wall = doc.createElement('line')
-                wall.setAttribute('class', 'wall')
-                wall.setAttribute('x1', str(x * cell_size))
-                wall.setAttribute('y1', str((y + 1) * cell_size))
-                wall.setAttribute('x2', str((x + 1) * cell_size))
-                wall.setAttribute('y2', str((y + 1) * cell_size))
-                svg.appendChild(wall)
-            if maze[x][y].walls[WEST]:
-                wall = doc.createElement('line')
-                wall.setAttribute('class', 'wall')
-                wall.setAttribute('x1', str(x * cell_size))
-                wall.setAttribute('y1', str(y * cell_size))
-                wall.setAttribute('x2', str(x * cell_size))
-                wall.setAttribute('y2', str((y + 1) * cell_size))
-                svg.appendChild(wall)
-            if maze[x][y].walls[EAST]:
-                wall = doc.createElement('line')
-                wall.setAttribute('class', 'wall')
-                wall.setAttribute('x1', str((x + 1) * cell_size))
-                wall.setAttribute('y1', str(y * cell_size))
-                wall.setAttribute('x2', str((x + 1) * cell_size))
-                wall.setAttribute('y2', str((y + 1) * cell_size))
-                svg.appendChild(wall)
-            if maze[x][y].visited:
-                path = doc.createElement('line')
-                path.setAttribute('class', 'path')
-                path.setAttribute('x1', str(x * cell_size + cell_size // 2))
-                path.setAttribute('y1', str(y * cell_size + cell_size // 2))
-                path.setAttribute('x2', str(x * cell_size + cell_size // 2))
-                path.setAttribute('y2', str(y * cell_size + cell_size // 2))
-                svg.appendChild(path)
+    for y in range(len(maze)):
+        for x in range(len(maze[0])):
+            if maze[y][x].walls[NORTH]:
+                dwg.add(dwg.line((x * cell_size, y * cell_size),
+                        ((x + 1) * cell_size, y * cell_size), class_='wall'))
+            if maze[y][x].walls[SOUTH]:
+                dwg.add(dwg.line((x * cell_size, (y + 1) * cell_size),
+                        ((x + 1) * cell_size, (y + 1) * cell_size), class_='wall'))
+            if maze[y][x].walls[WEST]:
+                dwg.add(dwg.line((x * cell_size, y * cell_size),
+                        (x * cell_size, (y + 1) * cell_size), class_='wall'))
+            if maze[y][x].walls[EAST]:
+                dwg.add(dwg.line(((x + 1) * cell_size, y * cell_size),
+                        ((x + 1) * cell_size, (y + 1) * cell_size), class_='wall'))
+            if maze[y][x].visited:
+                dwg.add(dwg.line((x * cell_size + cell_size // 2, y * cell_size + cell_size // 2),
+                        (x * cell_size + cell_size // 2, y * cell_size + cell_size // 2), class_='path'))
 
-    return doc.toprettyxml()
+    return dwg.tostring()
 
-maze = generate_maze(40, 20)
-svg = maze_to_svg(maze, 20)
 
-with open("maze1.svg", "w") as f:
+svg = maze_to_svg(pixel_size)
+
+with open(save_file+".svg", "w") as f:
     f.write(svg)
+cairosvg.svg2png(url=save_file+".svg", write_to=save_file+".png")
+os.remove(save_file+".svg")
