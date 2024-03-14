@@ -6,8 +6,7 @@ import random
 NORTH, SOUTH, EAST, WEST = 0, 1, 2, 3
 directions = [NORTH, SOUTH, EAST, WEST]
 opposites = {NORTH: SOUTH, SOUTH: NORTH, EAST: WEST, WEST: EAST}
-neighbors = {NORTH: (0, -1), SOUTH: (0, 1), WEST: (-1, 0),
-             EAST: (1, 0)}
+neighbors = {NORTH: (0, -1), SOUTH: (0, 1), WEST: (-1, 0), EAST: (1, 0)}
 width, height = 40, 20
 
 # This defines a single cell with four walls
