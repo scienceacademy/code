@@ -27,6 +27,10 @@ def heuristic(cell, goal):
     # Calculate the Manhattan distance as a heuristic
     return abs(cell[0] - goal[0]) + abs(cell[1] - goal[1])
 
+def sort_by_cost(cell_list):
+    return sorted(cell_list, key=lambda x: x[0], reverse=True)
+
+
 def solve(start, end):
     # List of cells to be checked
     cell_list = []
